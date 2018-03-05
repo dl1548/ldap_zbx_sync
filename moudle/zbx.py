@@ -4,7 +4,7 @@ import requests
 import json
 
 class Zbx():
-    #auth=None
+    auth=None
     zbx_host='ipaddr'
     api_url="http://%s/zabbix/api_jsonrpc.php"%zbx_host
     __user="username"
