@@ -1,4 +1,4 @@
- ldap_zbx_sync
+ldap_zbx_sync
 #### 安装依赖
 yum -y install python-devel libevent-devel openldap-devel
 
@@ -11,4 +11,4 @@ python-ldap
 
 
 ##### 定时执行即可
-* */3 * * * /usr/bin/python /$path/sync.py >>/tmp/ldap_zbx_sync.log 2>&1
+`* */3 * * * /usr/bin/python /$path/sync.py >>/tmp/ldap_zbx_sync.log 2>&1`
