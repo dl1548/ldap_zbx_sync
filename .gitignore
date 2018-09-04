@@ -1,0 +1,9 @@
+# virtual env
+venv
+# Python
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+dist
+build
