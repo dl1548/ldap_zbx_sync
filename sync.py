@@ -10,13 +10,26 @@ domain_name = u'xxxxx.cn'
 ldap_user = u'xxxxxxxxx'
 ldap_pwd = u'xxxxxxxxxx'
 #ou的层级  1：没有层级，直接写。2：有层级则从内到外开始写多个ou
-baseDN = u'ou=H,ou=IT,ou=Shanghai,ou=China,dc=xxxxxxx,dc=cn'
+#baseDN = u'ou=H,ou=IT,ou=Shanghai,ou=China,dc=xxxxxxx,dc=cn'
+
+baseDN_list= []
+user_list=[]
+
+nextou=['test',"IT Public"]
+
+for n in nextou:
+    bd = "ou=" + n + ',' + baseDN
+    baseDN_list.append(bd)
 
 #获取ldap user列表
-ldap_conn = get_ldap.LdapToZbx(ldap_url,domain_name,ldap_user,ldap_pwd)
-ldap_user_list = ldap_conn.search_ou_user(baseDN)
+    ldap_conn = get_ldap.LdapToZbx(ldap_url,domain_name,ldap_user,ldap_pwd)
+    ldap_user_list = ldap_conn.search_ou_user(bd)
 
-print ldap_user_list
+    for u in ldap_user_list:
+        user_list.append(u)
+
+print user_list
+
 
 #zabbix相关信息,根据实际情况修改
 zbx_host='xxx.xxx.xxx.xxx'
@@ -34,7 +47,7 @@ print zbx_user_list
 
 '''
 #创建用户
-for username in ldap_user_list:
+for username in user_list:
 	if username not in zbx_user_list:
 		try:
 			zbx.create_user(username,groupname)
@@ -44,7 +57,7 @@ for username in ldap_user_list:
 			print 'connect error'
 #删除用户
 for username in zbx_user_list:
-	if username not in ldap_user_list:
+	if username not in user_list:
 		try:
 			zbx.del_user(username)
 			date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
