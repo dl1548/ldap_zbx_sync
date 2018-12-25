@@ -1,4 +1,6 @@
-#coding: utf-8
+# -*- coding:utf-8 -*-
+# Author: zili
+
 import urllib
 import requests
 import json
