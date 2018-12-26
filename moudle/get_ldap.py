@@ -37,6 +37,8 @@ class LdapToZbx():
             for person in results:
                 username = person[1]['sAMAccountName'][0]
                 user_list.append(username)
+                # username = person[1]['userPrincipalName'][0].split('@')[0]
+                # user_list.append(username)
             return user_list
         else:
             return {'error':'The ou_user was not found'}
@@ -51,10 +53,13 @@ class LdapToZbx():
                 if 'name' in allinfo[1]:
                     group=allinfo[1]['name'][0]
                 if 'member' in allinfo[1]:
+                    # for cn in allinfo[1]['member']:
+                    #     v = cn.split(',')
+                    #     member = v[0].split('=')
+                    #     i.append(member[1])
                     for cn in allinfo[1]['member']:
-                        v = cn.split(',')
-                        member = v[0].split('=')
-                        i.append(member[1])
+                        loginname=self.search_ou_user(cn)
+                        i.append(loginname[0])
                 data_dict[group]=i
         
             return data_dict

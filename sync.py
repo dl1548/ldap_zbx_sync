@@ -22,13 +22,13 @@ ou_group_list=['testGroup']
 # user : 同步ou下用户
 # group : 同步ou下组内成员
 # all : 用户和组内成员全部同步
-sync_option='all'
+sync_option='group'
 
 
 # zabbix相关信息,根据实际情况修改
 zbx_host='192.168.1.100'
 api_url="http://%s/zabbix/api_jsonrpc.php"%zbx_host
-zbx_user="admin1"
+zbx_user="admin"
 zbx_pwd="zabbix"
 #新加用户分配到的组(提前在zbx创建)
 groupname = 'ldap_sync' 
@@ -63,6 +63,7 @@ if sync_option=='group':
 	if ou_list:
 		for ou in ou_list:
 			basedn = "ou=" + ou + ',' + baseOU + ',' + baseDN
+			print basedn
 			ldap_conn = get_ldap.LdapToZbx(ldap_url,domain_name,ldap_user,ldap_pwd)
 			group_info = ldap_conn.search_ou_group(basedn)
 			for g in ou_group_list:
@@ -117,14 +118,16 @@ zbx = zbx.Zbx(zbx_host,api_url,zbx_user,zbx_pwd)
 zbx_user_list = zbx.get_userlist()
 
 #创建用户
-for username in ldap_user_list:
-	if username not in zbx_user_list:
-		try:
-			zbx.create_user(username,groupname)
-			date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
-			print date + " add user " + username
-		except Exception as e:
-			print 'connect error'
+# print ldap_user_list
+# print zbx_user_list
+# for username in ldap_user_list:
+# 	if username not in zbx_user_list:
+# 		try:
+# 			zbx.create_user(username,groupname)
+# 			date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+# 			print date + " add user " + username
+# 		except Exception as e:
+# 			print 'connect error'
 
 # #删除用户
 # for username in zbx_user_list:
