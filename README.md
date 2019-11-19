@@ -5,8 +5,16 @@ yum -y install python-devel libevent-devel openldap-devel
 ##### 下载pip包，安装pip
 
 ##### 安装模块
+requests 
+
+urllib3 
+
+pyOpenSSL
+
 requests
+
 gevent
+
 python-ldap
 
 
