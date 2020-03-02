@@ -18,5 +18,8 @@ gevent
 python-ldap
 
 
+##### 修改配置 
+jksync/config.py
+
 ##### 定时执行即可
 `* */3 * * * /usr/bin/python /$path/sync.py >>/tmp/ldap_zbx_sync.log 2>&1`
