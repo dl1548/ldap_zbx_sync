@@ -4,13 +4,13 @@
 import ldap
 from config import *
 
+#import sys
+#reload(sys)
+#sys.setdefaultencoding('utf8')
 
 class LdapToZbx():
-    def __init__(self,
-                 ldap_url=LDAP_URL,
-                 domain_name=LDAP_DOMAIN_NAME,
-                 admin_user=LDAP_USER,
-                 admin_pwd=LDAP_PWD):
+    def __init__(self,ldap_url=LDAP_URL,domain_name=LDAP_DOMAIN_NAME,admin_user=LDAP_USER,admin_pwd=LDAP_PWD):
+
         self.ldap_url = LDAP_URL
         self.domain_name = LDAP_DOMAIN_NAME
         self.admin_user = LDAP_USER
@@ -26,34 +26,73 @@ class LdapToZbx():
 
     def get_ou_guid(self, baseDN):
         searchFilter = '(&(objectClass=OrganizationalUnit))'
-        results = self.con.search_s(baseDN, ldap.SCOPE_SUBTREE, searchFilter,
-                                    ['distinguishedName', 'objectGUID'])
-        if results:
-            for i in results:
-                if i[0] == baseDN:
-                    return i[1]['objectGUID']
-        else:
+        results = self.con.search_s(
+            baseDN,
+            ldap.SCOPE_SUBTREE,
+            searchFilter,
+            ['distinguishedName', 'objectGUID']
+        )
+
+        if not results:
             return {'error': 'The ou was not found'}
+
+        for i in results:
+            if i[0] == baseDN:
+                return i[1]['objectGUID']
+            
 
     #SCOPE_BASE (基数：查询指定DN，也就是在DN中指定的那个，就只查这DN的)
     #SCOPE_ONELEVEL (一级：查询指定DN下的一级子目录，不会查子目录的子目录)
     #SCOPE_SUBTREE (子树：查询指定DN下的所有目录，包括指定DN)
+
+    # def search_ou_user(self, baseDN=LDAP_SYNC_OU_USER):
+    #     user_list = []
+    #     searchFilter = '(&(objectClass=person))'
+    #     try:
+    #         for ou in baseDN:
+    #             results = self.con.search_s(ou + ',' + LDAP_BASE_DN,
+    #                                         ldap.SCOPE_ONELEVEL, searchFilter)
+    #             if results is not None:
+    #                 for person in results:
+    #                     # print(person[1])
+    #                     if isinstance(person[1],dict) and 'sAMAccountName' in person[1].keys():
+    #                         username = person[1]['sAMAccountName'][0].split('@')[0]
+    #                         user_list.append(username)
+    #                     else:
+    #                         username = person[1]['userPrincipalName'][0]
+    #                         user_list.append(username)
+    #         return user_list
+    #     except Exception as e:
+    #         return str(e)
+
     def search_ou_user(self, baseDN=LDAP_SYNC_OU_USER):
-        user_list = []
+        user_list = list()
         searchFilter = '(&(objectClass=person))'
         try:
             for ou in baseDN:
-                results = self.con.search_s(ou + ',' + LDAP_BASE_DN,
-                                            ldap.SCOPE_ONELEVEL, searchFilter)
+                results = self.con.search_s(
+                    ou + ',' + LDAP_BASE_DN,ldap.SCOPE_ONELEVEL, searchFilter
+                )
                 if results is not None:
                     for person in results:
+                        user_info = list()
                         # print(person[1])
                         if isinstance(person[1],dict) and 'sAMAccountName' in person[1].keys():
                             username = person[1]['sAMAccountName'][0].split('@')[0]
-                            user_list.append(username)
+                            user_info.append(username)
                         else:
                             username = person[1]['userPrincipalName'][0]
-                            user_list.append(username)
+                            user_info.append(username)
+
+                        if 'sn' and 'givenName' in person[1].keys():
+                            first_name = person[1]['sn'][0]
+                            last_name = person[1]['givenName'][0]
+                        else:
+                            first_name = last_name = 'Null'
+                        user_info.append(first_name)
+                        user_info.append(last_name)
+
+                        user_list.append(user_info)
             return user_list
         except Exception as e:
             return str(e)
@@ -65,15 +104,26 @@ class LdapToZbx():
         results = self.con.search_s(baseDN, ldap.SCOPE_SUBTREE, searchFilter)
         if results is not None:
             for person in results:
+                user_info = list()
                 # print(person[1])
                 if isinstance(person[1],dict) and 'sAMAccountName' in person[1].keys():
                     username = person[1]['sAMAccountName'][0].split('@')[0]
-                    user_list.append(username)
+                    user_info.append(username)
                 else:
                     username = person[1]['userPrincipalName'][0]
-                    user_list.append(username)                    
-            return user_list
+                    user_info.append(username)
 
+                if 'sn' and 'givenName' in person[1].keys():
+                    first_name = person[1]['sn'][0]
+                    last_name = person[1]['givenName'][0]
+                else:
+                    first_name = last_name = 'Null'
+                user_info.append(first_name)
+                user_info.append(last_name)
+
+                user_list.append(user_info)                   
+            return user_list
+            
     def search_ou_group(self, baseDN):
         data_dict = {}
         searchFilter = '(&(objectClass=group))'

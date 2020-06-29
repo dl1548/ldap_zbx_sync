@@ -68,18 +68,20 @@ class Zbx():
             return res_json['result'][0]['usrgrpid']
 
         except Exception as exc:
-            return 'connect error'
+            return 'connect error-0'
         return 1
 
     #创建用户
-    def create_user(self, username, groupname=ZABBIX_GROUP):
+    def create_user(self, user_info, groupname=ZABBIX_GROUP):
         self.login()
         group_id = self.get_usrgrpid(groupname)
         data = {
             "jsonrpc": "2.0",
             "method": "user.create",
             "params": {
-                "alias": username,
+                "alias": user_info[0],
+                "surname": user_info[1],
+                "name"   : user_info[2],
                 "passwd": ZBX_NEW_USER_DEFAULT_PWD,
                 "usrgrps": [{
                     "usrgrpid": group_id
@@ -96,7 +98,7 @@ class Zbx():
                 timeout=5)
             res_json = req.json()
         except Exception as exc:
-            return 'connect error'
+            return 'connect error-1'
         return 1
 
     #获取用户列表
@@ -129,7 +131,7 @@ class Zbx():
                 user_list.remove('guest')
             return user_list
         except Exception as exc:
-            return 'connect error'
+            return 'connect error-2'
         return 1
 
     #获取用户ID
@@ -157,7 +159,7 @@ class Zbx():
             userid = res_json['result'][0]['userid']
             return userid
         except Exception as exc:
-            return 'connect error'
+            return 'connect error-3'
         return 1
 
     #删除用户
@@ -179,5 +181,5 @@ class Zbx():
                 headers={"Content-Type": "application/json-rpc"},
                 timeout=5)
         except Exception as exc:
-            return 'connect error'
+            return 'connect error-4'
         return 1

@@ -18,7 +18,7 @@ LDAP_BASE_DN = u'dc=jktest,dc=cn'
 
 # 同步OU下用户，不需要则为空
 LDAP_SYNC_OU_USER = [
-    'ou=IT,ou=Shanghai,ou=China',
+    #'ou=IT,ou=Shanghai,ou=China',
     'ou=IT Public,ou=IT,ou=Shanghai,ou=China',
 ]
 
