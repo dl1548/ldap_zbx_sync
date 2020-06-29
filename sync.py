@@ -9,12 +9,12 @@ from jksync.config import LDAP_SYNC_OU_USER, LDAP_SYNC_OU_GROUP
 
 zbx_conn = zbx_api.Zbx()
 zbx_user_list = zbx_conn.get_userlist()
-# print(zbx_user_list)
+print(zbx_user_list)
 
 ldap_conn = ldap_api.LdapToZbx()
 if len(LDAP_SYNC_OU_USER) > 0:
     ldap_user_list = ldap_conn.search_ou_user()
-# print user_list
+    # print ldap_user_list
 
 ldap_group_user_list=[]
 if len(LDAP_SYNC_OU_GROUP) > 0:
@@ -26,12 +26,8 @@ if len(LDAP_SYNC_OU_GROUP) > 0:
                 ldap_group_user_list.append(member)
 # print ldap_group_user_list
 
-
-for username in ldap_user_list+ldap_group_user_list:
-    if username not in zbx_user_list:
-        try:
-            zbx_conn.create_user(username)
-            date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
-            print date + " add user " + username
-        except Exception as e:
-            print 'connect error'
+for user_info in ldap_user_list+ldap_group_user_list:
+    if user_info[0] not in zbx_user_list:
+        zbx_conn.create_user(user_info)
+        date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+        print date + " add user " + user_info[0] + user_info[1] + user_info[2]
